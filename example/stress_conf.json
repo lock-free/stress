@@ -1,6 +1,8 @@
 {
   "Apis": [{
-    "Url": "http://google.com",
+    "Scheme": "http",
+    "Host": "google.com",
+    "Path": "/",
     "Method": "GET",
     "headers": {},
     "Body": "",

@@ -19,7 +19,8 @@ func TestApi(apiConfig ApiConfig) error {
 		Timeout: time.Duration(time.Duration(apiConfig.Timeout) * time.Second),
 	}
 
-	request, err := http.NewRequest(apiConfig.Method, apiConfig.Url, bytes.NewBufferString(apiConfig.Body))
+	url := apiConfig.Scheme + "://" + apiConfig.Host + apiConfig.Path
+	request, err := http.NewRequest(apiConfig.Method, url, bytes.NewBufferString(apiConfig.Body))
 	if err != nil {
 		return err
 	}
@@ -143,7 +144,9 @@ type StressConfig struct {
 
 type ApiConfig struct {
 	// request part
-	Url     string
+	Scheme  string // http, https
+	Host    string // hostname
+	Path    string //path
 	Method  string // GET | POST | PUT | DELETE | HEAD | OPTION
 	Headers map[string]string
 	Body    string
