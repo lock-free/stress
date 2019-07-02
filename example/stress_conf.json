@@ -1,0 +1,17 @@
+{
+  "Apis": [{
+    "Url": "http://google.com",
+    "Method": "GET",
+    "headers": {},
+    "Body": "",
+    "Timeout": 120,
+
+    "ReqPerSec": 1,
+    "Duration": 3,
+    "MaxRunningReq": 10,
+
+    "Expect": {
+      "Status": [200]
+    }
+  }]
+}
