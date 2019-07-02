@@ -13,6 +13,7 @@ import (
 func main() {
 	// parse args
 	configPathPointer := flag.String("config", "./stress_conf.json", "config file path")
+	hostPointer := flag.String("host", "", "host variable, like a.com")
 	flag.Parse()
 
 	cwd, err := os.Getwd()
@@ -31,7 +32,7 @@ func main() {
 	}
 
 	log.Println("[config path] " + configPath)
-	stress.StressTesting(stressConfig)
+	stress.StressTesting(stressConfig, *hostPointer)
 }
 
 func ReadJson(filePath string, f interface{}) error {
