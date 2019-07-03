@@ -98,11 +98,7 @@ func CheckBody(bodyBytes []byte, expect ApiExpect) error {
 	return nil
 }
 
-func StressTestingApi(apiConfig ApiConfig, host string) {
-	if host != "" {
-		apiConfig.Host = host
-	}
-
+func StressTestingApi(apiConfig ApiConfig) {
 	log.Printf("[api stress] %v", apiConfig)
 	t1 := time.Now().UnixNano() / int64(time.Second)
 
@@ -133,12 +129,21 @@ func StressTestingApi(apiConfig ApiConfig, host string) {
 
 	t2 := time.Now().UnixNano() / int64(time.Second)
 	// display statistics
+	// TODO average http response time
 	log.Printf("[api stress result] totalRun = %d, errored = %d, totalTime = %dseconds", totalRun, errorCount, t2-t1)
 }
 
-func StressTesting(stressConfig StressConfig, host string) {
+func StressTesting(stressConfig StressConfig, host string, scheme string) {
 	for _, apiConfig := range stressConfig.Apis {
-		StressTestingApi(apiConfig, host)
+		if host != "" {
+			apiConfig.Host = host
+		}
+
+		if scheme != "" {
+			apiConfig.Scheme = scheme
+		}
+
+		StressTestingApi(apiConfig)
 	}
 }
 
