@@ -100,25 +100,36 @@ func CheckBody(bodyBytes []byte, expect ApiExpect) error {
 
 func StressTestingApi(apiConfig ApiConfig) {
 	log.Printf("[api stress] %v", apiConfig)
-	t1 := time.Now().UnixNano() / int64(time.Second)
 
 	coner := GetConer(apiConfig.MaxRunningReq)
-	totalRun, errorCount := 0, 0
-	var errorCountMutex = &sync.Mutex{}
+	totalRun, errorCount, reqTotalTime := 0, 0, int64(0)
+	var statMutex = &sync.Mutex{}
+
+	t1 := time.Now().UnixNano() / int64(time.Millisecond)
+	var wg sync.WaitGroup
 
 	for i := 0; i < apiConfig.Duration; i++ {
 		for j := 0; j < apiConfig.ReqPerSec; j++ {
 			accepted := coner.Run(func() {
+				reqStart := time.Now().UnixNano() / int64(time.Millisecond)
 				err := TestApi(apiConfig)
+				reqEnd := time.Now().UnixNano() / int64(time.Millisecond)
+				reqTime := reqEnd - reqStart
+
+				// do some statistics
+				statMutex.Lock()
+				reqTotalTime += reqTime
 				if err != nil {
 					log.Printf("[Errored] %v", err)
-					errorCountMutex.Lock()
 					errorCount++
-					errorCountMutex.Unlock()
 				}
+				statMutex.Unlock()
+
+				wg.Done()
 			})
 
 			if accepted {
+				wg.Add(1)
 				totalRun++
 			}
 		}
@@ -127,10 +138,12 @@ func StressTestingApi(apiConfig ApiConfig) {
 		time.Sleep(1 * time.Second)
 	}
 
-	t2 := time.Now().UnixNano() / int64(time.Second)
+	wg.Wait()
+	t2 := time.Now().UnixNano() / int64(time.Millisecond)
 	// display statistics
 	// TODO average http response time
-	log.Printf("[api stress result] totalRun = %d, errored = %d, totalTime = %dseconds", totalRun, errorCount, t2-t1)
+	log.Printf("[api stress result] totalRun = %d, errored = %d, totalTime = %d s, avgReqTime = %d ms",
+		totalRun, errorCount, (t2-t1)/1000, reqTotalTime/int64(totalRun))
 }
 
 func StressTesting(stressConfig StressConfig, host string, scheme string) {
