@@ -39,6 +39,8 @@ func TestApi(apiConfig ApiConfig) error {
 		return errors.New(fmt.Sprintf("Status check fail, http status code is %d, expected status are %v", resp.StatusCode, apiConfig.Expect.Status))
 	}
 
+	// TODO check header
+
 	// check body
 	defer resp.Body.Close()
 
@@ -146,17 +148,19 @@ func StressTestingApi(apiConfig ApiConfig) {
 		totalRun, errorCount, (t2-t1)/1000, reqTotalTime/int64(totalRun))
 }
 
-func StressTesting(stressConfig StressConfig, host string, scheme string) {
+func StressTesting(stressConfig StressConfig, host string, scheme string, only string) {
 	for _, apiConfig := range stressConfig.Apis {
-		if host != "" {
-			apiConfig.Host = host
-		}
+		if only == "" || only == apiConfig.Name {
+			if host != "" {
+				apiConfig.Host = host
+			}
 
-		if scheme != "" {
-			apiConfig.Scheme = scheme
-		}
+			if scheme != "" {
+				apiConfig.Scheme = scheme
+			}
 
-		StressTestingApi(apiConfig)
+			StressTestingApi(apiConfig)
+		}
 	}
 }
 
@@ -165,6 +169,7 @@ type StressConfig struct {
 }
 
 type ApiConfig struct {
+	Name string
 	// request part
 	Scheme  string // http, https
 	Host    string // hostname

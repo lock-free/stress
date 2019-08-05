@@ -1,7 +1,25 @@
 {
   "Apis": [{
+    "Name": "test1",
+    "Scheme": "https",
+    "Host": "www.google.com",
+    "Path": "/",
+    "Method": "GET",
+    "headers": {},
+    "Body": "",
+    "Timeout": 120,
+
+    "ReqPerSec": 1,
+    "Duration": 3,
+    "MaxRunningReq": 10,
+
+    "Expect": {
+      "Status": [200]
+    }
+  }, {
+    "Name": "test2",
     "Scheme": "http",
-    "Host": "google.com",
+    "Host": "www.baidu.com",
     "Path": "/",
     "Method": "GET",
     "headers": {},
