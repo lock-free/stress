@@ -14,13 +14,17 @@ import (
 	"time"
 )
 
-func TestApi(apiConfig ApiConfig) error {
+func TestApi(apiConfig *ApiConfig) error {
 	client := http.Client{
 		Timeout: time.Duration(time.Duration(apiConfig.Timeout) * time.Second),
 	}
 
 	url := apiConfig.Scheme + "://" + apiConfig.Host + apiConfig.Path
-	request, err := http.NewRequest(apiConfig.Method, url, bytes.NewBufferString(apiConfig.Body))
+	body, err := GetRequestBody(apiConfig)
+	if err != nil {
+		return err
+	}
+	request, err := http.NewRequest(apiConfig.Method, url, bytes.NewBufferString(body))
 	if err != nil {
 		return err
 	}
@@ -114,7 +118,7 @@ func StressTestingApi(apiConfig ApiConfig) {
 		for j := 0; j < apiConfig.ReqPerSec; j++ {
 			accepted := coner.Run(func() {
 				reqStart := time.Now().UnixNano() / int64(time.Millisecond)
-				err := TestApi(apiConfig)
+				err := TestApi(&apiConfig)
 				reqEnd := time.Now().UnixNano() / int64(time.Millisecond)
 				reqTime := reqEnd - reqStart
 
@@ -176,8 +180,8 @@ type ApiConfig struct {
 	Path    string //path
 	Method  string // GET | POST | PUT | DELETE | HEAD | OPTION
 	Headers map[string]string
-	Body    string
-	Timeout int // seconds
+	Body    interface{} // string || JSON object
+	Timeout int         // seconds
 
 	// qps controll part
 	ReqPerSec     int // requests send per second
@@ -186,6 +190,16 @@ type ApiConfig struct {
 
 	// validation part
 	Expect ApiExpect
+}
+
+func GetRequestBody(apiConfig *ApiConfig) (string, error) {
+	switch v := apiConfig.Body.(type) {
+	case string:
+		return v, nil
+	default:
+		bs, err := json.Marshal(apiConfig.Body)
+		return string(bs), err
+	}
 }
 
 const EXPECT_EQUAL = "equal"
