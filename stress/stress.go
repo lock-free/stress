@@ -53,6 +53,10 @@ func TestApi(apiConfig *ApiConfig) error {
 		return err
 	}
 
+	if apiConfig.Expect.LogBody {
+		fmt.Println(string(bodyBytes))
+	}
+
 	return CheckBody(bodyBytes, apiConfig.Expect)
 }
 
@@ -210,4 +214,5 @@ type ApiExpect struct {
 	Status         []int
 	BodyExpectType string
 	BodyExp        string
+	LogBody        bool
 }
