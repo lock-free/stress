@@ -9,9 +9,20 @@
   pruneopts = "UT"
   revision = "f39bb882c4f98e56afe0c75ba2f0eca4f89869e8"
 
+[[projects]]
+  digest = "1:ba852707958e39694e7f64328008287892adf9b1aed0174480e2f50e0c23e521"
+  name = "github.com/logrusorgru/aurora"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "21d75270181e0436fee7bd58b991c212cf309068"
+  version = "v2.0"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = ["github.com/lock-free/gopcp"]
+  input-imports = [
+    "github.com/lock-free/gopcp",
+    "github.com/logrusorgru/aurora",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
