@@ -115,7 +115,7 @@ func CheckBody(bodyBytes []byte, expect ApiExpect) error {
 	switch expect.BodyExpectType {
 	case EXPECT_EQUAL:
 		if body != expect.BodyExp {
-			return errors.New(fmt.Sprintf("Body check fail, body is %s", body))
+			return fmt.Errorf("Body check fail, body is %s, expect bodyExp is %v", body, expect.BodyExp)
 		}
 
 	case EXPECT_EQUAL_JSON:
@@ -125,7 +125,7 @@ func CheckBody(bodyBytes []byte, expect ApiExpect) error {
 			return err
 		}
 		if !reflect.DeepEqual(value, expect.BodyExp) {
-			return errors.New(fmt.Sprintf("Body check fail, body is %s", body))
+			return fmt.Errorf("Body check fail, body is %s, expect bodyExp is %v", body, expect.BodyExp)
 		}
 
 	case EXPECT_REG:
@@ -138,7 +138,7 @@ func CheckBody(bodyBytes []byte, expect ApiExpect) error {
 			return err
 		}
 		if !matched {
-			return errors.New(fmt.Sprintf("Body check fail, body is %s", body))
+			return fmt.Errorf("Body check fail, body is %s, expect bodyExp is %v", body, expect.BodyExp)
 		}
 
 	case EXPECT_PCP:
@@ -163,11 +163,11 @@ func CheckBody(bodyBytes []byte, expect ApiExpect) error {
 
 		matched, ok := r.(bool)
 		if !ok {
-			return errors.New(fmt.Sprintf("Body check fail, result of pcp is not boolean."))
+			return fmt.Errorf("Body check fail, result of pcp is not boolean.")
 		}
 
 		if !matched {
-			return errors.New(fmt.Sprintf("Body check fail, body is %s", body))
+			return fmt.Errorf("Body check fail, body is %s, expect bodyExp is %v", body, expect.BodyExp)
 		}
 	}
 
