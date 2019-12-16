@@ -38,6 +38,8 @@ type ApiConfig struct {
 
 	// validation part
 	Expect ApiExpect
+
+	FailExit bool // if api testing fail, exit process
 }
 
 func GetRequestBody(apiConfig *ApiConfig) (string, error) {
@@ -189,6 +191,9 @@ func StressTestingApi(apiConfig ApiConfig) {
 			accepted := coner.Run(func() {
 				reqStart := time.Now().UnixNano() / int64(time.Millisecond)
 				err := TestApi(&apiConfig)
+				if apiConfig.FailExit {
+					panic(err)
+				}
 				reqEnd := time.Now().UnixNano() / int64(time.Millisecond)
 				reqTime := reqEnd - reqStart
 

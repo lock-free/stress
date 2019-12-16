@@ -25,6 +25,9 @@ func main() {
 
 	// resolve config path
 	configPath := filepath.Join(cwd, *configPathPointer)
+	if (*configPathPointer)[0] == '/' {
+		configPath = *configPathPointer
+	}
 
 	// read config
 	var stressConfig stress.StressConfig
