@@ -191,7 +191,7 @@ func StressTestingApi(apiConfig ApiConfig) {
 			accepted := coner.Run(func() {
 				reqStart := time.Now().UnixNano() / int64(time.Millisecond)
 				err := TestApi(&apiConfig)
-				if apiConfig.FailExit {
+				if apiConfig.FailExit && err != nil {
 					panic(err)
 				}
 				reqEnd := time.Now().UnixNano() / int64(time.Millisecond)
