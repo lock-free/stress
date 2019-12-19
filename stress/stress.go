@@ -20,6 +20,11 @@ type StressConfig struct {
 	Apis []ApiConfig
 }
 
+type BasicAuth struct {
+	Username string
+	Password string
+}
+
 type ApiConfig struct {
 	Name string
 	// request part
@@ -27,6 +32,7 @@ type ApiConfig struct {
 	Host    string // hostname
 	Path    string //path
 	Method  string // GET | POST | PUT | DELETE | HEAD | OPTION
+	Auth    BasicAuth
 	Headers map[string]string
 	Body    interface{} // string || JSON object
 	Timeout int         // seconds
@@ -74,16 +80,20 @@ func TestApi(apiConfig *ApiConfig) error {
 	if err != nil {
 		return err
 	}
-	request, err := http.NewRequest(apiConfig.Method, url, bytes.NewBufferString(body))
+	req, err := http.NewRequest(apiConfig.Method, url, bytes.NewBufferString(body))
 	if err != nil {
 		return err
 	}
 
-	for k, v := range apiConfig.Headers {
-		request.Header.Set(k, v)
+	if apiConfig.Auth.Username != "" {
+		req.SetBasicAuth(apiConfig.Auth.Username, apiConfig.Auth.Password)
 	}
 
-	resp, err := client.Do(request)
+	for k, v := range apiConfig.Headers {
+		req.Header.Set(k, v)
+	}
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
